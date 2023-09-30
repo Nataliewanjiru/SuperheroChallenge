@@ -95,10 +95,34 @@ api.add_resource(PowerById,'/powers/<int:id>')
 
 
 class Heropowers(Resource):
-  def get(self):
-     price = request.form.get('price')
-    pizza_id = request.form.get('pizza_id')
-    restaurant_id = request.form.get('restaurant_id')
+  def post(self):
+     strength = request.form.get('strength')
+     hero_id = request.form.get('hero_id')
+     power_id = request.form.get('power_id')
+
+     hero=Hero.query.get(hero_id)
+     power=Powers.query.get(power_id)
+
+     if not hero or not power:
+        return jsonify({'errors': ['Hero or Power not found']})
+     
+     newheropower = Hero_powers(strength =strength, hero_id=hero_id,power_id=power_id)
+     db.session.add(newheropower)
+     db.session.commit()
+
+     if newheropower:
+           result = {
+            'id': hero.id,
+            'name': hero.name,
+            'super_name': hero.super_name,
+            'powers': [power.serialize() for power in hero.heropowers]
+        }
+           
+           return jsonify(result)
+     else:
+
+        return jsonify({"errors":["validation errors"]})
+     
      
 api.add_resource(Heropowers,'/hero_powers')
 

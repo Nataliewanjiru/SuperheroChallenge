@@ -58,3 +58,8 @@ class Hero_powers(db.Model,SerializerMixin):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
 
+    def serialize(self):
+        power = Powers.query.filter_by( id = self.power_id).first()
+        return power.serialize()
+
+
