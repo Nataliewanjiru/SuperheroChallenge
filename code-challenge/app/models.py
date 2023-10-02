@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.orm import validates
+
 
 db = SQLAlchemy()
 
@@ -58,6 +60,18 @@ class Hero_powers(db.Model,SerializerMixin):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
 
+     #Validates the strength attribute
+    @validates("strength")
+    def validate_strength(self, key, strength):
+        strengths = ["Strong", "Weak", "Average"]
+        if not strength in strengths:
+            raise ValueError(
+                "Strength must be one of the following values: 'Strong', 'Weak', 'Average'"
+            )
+        return strength
+    
+
+    
     def serialize(self):
         power = Powers.query.filter_by( id = self.power_id).first()
         return power.serialize()

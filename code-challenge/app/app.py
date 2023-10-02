@@ -71,15 +71,15 @@ class PowerById(Resource):
 
   #Patch request to powers
    def patch(self,id):
-      data=Powers.query.filter_by(id=id).first()
+      data=Powers.query.filter_by(id=id).first()#Gets the first power
       if data:
          for desc in request.form:
-            setattr(data, desc,request.form[desc])
+            setattr(data, desc,request.form[desc])#Method changes the specified attribute
   
          db.session.add(data)
          db.session.commit()
 
-         response_answer = data.serialize()
+         response_answer = data.serialize()#Return the serialzed function of it
 
          response = make_response(
             jsonify(response_answer),200
@@ -89,27 +89,31 @@ class PowerById(Resource):
       else :
          return {"message":["validation errors"]}
 
-   
-  
 api.add_resource(PowerById,'/powers/<int:id>')
 
 
+
 class Heropowers(Resource):
+  #Using the post request to heroPowers
   def post(self):
+     #Form to be filled
      strength = request.form.get('strength')
      hero_id = request.form.get('hero_id')
      power_id = request.form.get('power_id')
 
      hero=Hero.query.get(hero_id)
      power=Powers.query.get(power_id)
-
+      
+      #Gets the specific hero and power then checks if it really exists
      if not hero or not power:
         return jsonify({'errors': ['Hero or Power not found']})
      
+     #creates an instance for doing the seeding
      newheropower = Hero_powers(strength =strength, hero_id=hero_id,power_id=power_id)
      db.session.add(newheropower)
      db.session.commit()
-
+      
+      #Returns the json format of it
      if newheropower:
            result = {
             'id': hero.id,
